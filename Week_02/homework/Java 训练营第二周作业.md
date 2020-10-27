@@ -41,101 +41,110 @@ java -XX:+UseParallelGC -Xms512m -Xmx512m -Xloggc:gc.parallel.512.log -XX:+Print
 
 - 环境：`Mac OSX 10.15.6 2.2GHz 六核 Intel Core i7 16GB`
 - 工具：wrk
-- 指令：`wrk -t8 -c40 -d60s --latency http://127.0.0.1:8088/api/hello`
+- 指令：`wrk -t100 -c200 -d60s --latency http://127.0.0.1:8088/api/hello`（100个线程，200个连接，执行60s）
 
 ### Serial
 
 ```
-java -jar -XX:+UseSerialGC -Xms2g -Xmx2g gateway-server-0.0.1-SNAPSHOT.jar
+java -jar -XX:+UseSerialGC -Xms4g -Xmx4g gateway-server-0.0.1-SNAPSHOT.jar
 ```
 
 __压测结果__
 
 ```
 Running 1m test @ http://127.0.0.1:8088/api/hello
-  8 threads and 40 connections
+  100 threads and 200 connections
   Thread Stats   Avg      Stdev     Max   +/- Stdev
-    Latency    13.46ms   60.14ms 693.15ms   94.73%
-    Req/Sec     9.42k     2.00k   12.95k    88.81%
+    Latency    38.02ms   96.20ms 687.28ms   89.95%
+    Req/Sec   495.29    189.24     1.59k    71.82%
   Latency Distribution
-     50%  452.00us
-     75%  562.00us
-     90%  811.00us
-     99%  314.10ms
-  3274000 requests in 1.00m, 390.88MB read
-Requests/sec:  54492.41
-Transfer/sec:      6.51MB
+     50%    3.49ms
+     75%    6.68ms
+     90%  135.29ms
+     99%  482.97ms
+  2635963 requests in 1.00m, 314.71MB read
+  Socket errors: connect 0, read 7, write 0, timeout 0
+Requests/sec:  43860.84
+Transfer/sec:      5.24MB
 ```
 
 ### Parallel
 
 ```
-java -jar -XX:+UseParallelGC -Xms2g -Xmx2g gateway-server-0.0.1-SNAPSHOT.jar
+java -jar -XX:+UseParallelGC -Xms4g -Xmx4g gateway-server-0.0.1-SNAPSHOT.jar
 ```
 
 __压测结果__
 
 ```
 Running 1m test @ http://127.0.0.1:8088/api/hello
-  8 threads and 40 connections
+  100 threads and 200 connections
   Thread Stats   Avg      Stdev     Max   +/- Stdev
-    Latency    13.52ms   52.62ms 448.59ms   94.25%
-    Req/Sec     7.65k     2.87k   15.24k    79.85%
+    Latency    26.39ms   67.24ms   1.27s    90.63%
+    Req/Sec   438.86    212.05     5.38k    68.38%
   Latency Distribution
-     50%  490.00us
-     75%  706.00us
-     90%    6.14ms
-     99%  299.44ms
-  2876078 requests in 1.00m, 343.38MB read
-Requests/sec:  47861.91
-Transfer/sec:      5.71MB
+     50%    3.57ms
+     75%    7.13ms
+     90%   84.97ms
+     99%  342.83ms
+  2087200 requests in 1.00m, 249.19MB read
+  Socket errors: connect 0, read 223, write 0, timeout 0
+Requests/sec:  34725.44
+Transfer/sec:      4.15MB
 ```
 
 ### CMS
 
 ```
-java -jar -XX:+UseConcMarkSweepGC -Xms2g -Xmx2g gateway-server-0.0.1-SNAPSHOT.jar
+java -jar -XX:+UseConcMarkSweepGC -Xms4g -Xmx4g gateway-server-0.0.1-SNAPSHOT.jar
 ```
 
 __压测结果__
 
 ```
 Running 1m test @ http://127.0.0.1:8088/api/hello
-  8 threads and 40 connections
+  100 threads and 200 connections
   Thread Stats   Avg      Stdev     Max   +/- Stdev
-    Latency    10.77ms   53.69ms 638.28ms   96.21%
-    Req/Sec     7.34k     2.68k   12.61k    77.56%
+    Latency    29.97ms   74.43ms 695.68ms   90.28%
+    Req/Sec   438.41    197.79     1.75k    66.11%
   Latency Distribution
-     50%  507.00us
-     75%  725.00us
-     90%    1.91ms
-     99%  308.53ms
-  2806900 requests in 1.00m, 335.12MB read
-Requests/sec:  46702.94
-Transfer/sec:      5.58MB
+     50%    3.65ms
+     75%    8.51ms
+     90%  100.26ms
+     99%  368.15ms
+  2423353 requests in 1.00m, 289.32MB read
+  Socket errors: connect 0, read 45, write 0, timeout 0
+Requests/sec:  40321.67
+Transfer/sec:      4.81MB
 ```
 
 ### G1
 
 ```
-java -jar -XX:+UseG1GC -Xms2g -Xmx2g gateway-server-0.0.1-SNAPSHOT.jar
+java -jar -XX:+UseG1GC -Xms4g -Xmx4g gateway-server-0.0.1-SNAPSHOT.jar
 ```
 
 __压测结果__
 
 ```
 Running 1m test @ http://127.0.0.1:8088/api/hello
-  8 threads and 40 connections
+  100 threads and 200 connections
   Thread Stats   Avg      Stdev     Max   +/- Stdev
-    Latency    18.36ms   74.45ms 789.52ms   94.03%
-    Req/Sec     7.35k     2.53k   12.73k    81.59%
+    Latency    35.86ms   88.76ms 920.45ms   90.18%
+    Req/Sec   434.50    189.13     1.69k    67.29%
   Latency Distribution
-     50%  521.00us
-     75%  780.00us
-     90%    4.45ms
-     99%  398.95ms
-  2845056 requests in 1.00m, 339.67MB read
-Requests/sec:  47350.87
-Transfer/sec:      5.65MB
+     50%    3.83ms
+     75%    9.01ms
+     90%  121.42ms
+     99%  452.23ms
+  2361232 requests in 1.00m, 281.91MB read
+  Socket errors: connect 0, read 33, write 1, timeout 0
+Requests/sec:  39286.18
+Transfer/sec:      4.69MB
 ```
+
+### 结论
+
+- 处理请求个数，最多：Serial，最少：Parallel
+- 平均延迟，最高：Serial，最低：Parallel
 
