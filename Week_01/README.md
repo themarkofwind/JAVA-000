@@ -371,6 +371,8 @@ __CMS阶段：__
 - 并发清除 Concurrent Sweep
 - 并发重置 Concurrent Reset：重置CMS算法的内部数据，为下次GC做准备
 
+<img src="./images/jvm_gc_cms.png" style="zoom:50%;" />
+
 #### G1 GC（Grabage First）
 
 垃圾优先，哪一块垃圾最多就优先清理它，将STW停顿时间和分布，变成可预期、可配置的。
@@ -403,6 +405,8 @@ __G1处理步骤：__
    4. 再次标记（Remark）
    5. 清理（Cleanup）
 3. 转移暂停：混合模式（Evacuation Pause (mixed)）
+
+<img src="./images/jvm_gc_g1.png" style="zoom:50%;" />
 
 #### 注意事项
 
