@@ -17,6 +17,8 @@ __GC日志__
 
 ![](./images/serial_gc_512.png)
 
+GC花费600ms
+
 __GC总结__
 
 - GC频率、是否出现OOM跟堆内存分配大小有直接关联
@@ -31,15 +33,40 @@ java -XX:+UseParallelGC -Xms128m -Xmx128m -Xloggc:gc.parallel.128.log -XX:+Print
 java -XX:+UseParallelGC -Xms512m -Xmx512m -Xloggc:gc.parallel.512.log -XX:+PrintGCDetails -XX:+PrintGCDateStamps GCLogAnalysis
 ```
 
+![](./images/parallel_gc_128.png)
+
+![](./images/parallel_gc_512.png)
+
+GC花费550ms
+
+__GC总结__
+
+- 128M堆大小，依旧会出现OOM
+- 512M堆大小，对比Serial GC，GC次数虽然较多，但总体GC时间略少，说明Parallel GC的运行速度更快
+
 ### CMS
 
+```
+java -XX:+UseConcMarkSweepGC -Xms128m -Xmx128m -Xloggc:gc.cms.128.log -XX:+PrintGC -XX:+PrintGCDateStamps GCLogAnalysis
+java -XX:+UseConcMarkSweepGC -Xms512m -Xmx512m -Xloggc:gc.cms.512.log -XX:+PrintGC -XX:+PrintGCDateStamps GCLogAnalysis
+```
+
+![](./images/cms_gc_512.png)
+
 ### G1
+
+```
+java -XX:+UseG1GC -Xms128m -Xmx128m -Xloggc:gc.g1.128.log -XX:+PrintGC -XX:+PrintGCDateStamps GCLogAnalysis
+java -XX:+UseG1GC -Xms512m -Xmx512m -Xloggc:gc.g1.512.log -XX:+PrintGC -XX:+PrintGCDateStamps GCLogAnalysis
+```
+
+![](./images/g1_gc_512.png)
 
 ## 压测演练
 
 ### 压测配置
 
-- 环境：`Mac OSX 10.15.6 2.2GHz 六核 Intel Core i7 16GB`
+- 环境：`Mac OSX 10.15.6 2.2GHz 六核 Intel Core i7 16GB JDK1.8.0_271-b09`
 - 工具：wrk
 - 指令：`wrk -t100 -c200 -d60s --latency http://127.0.0.1:8088/api/hello`（100个线程，200个连接，执行60s）
 
@@ -147,4 +174,8 @@ Transfer/sec:      4.69MB
 
 - 处理请求个数，最多：Serial，最少：Parallel
 - 平均延迟，最高：Serial，最低：Parallel
+- Serial GC，平均延迟明显要大于其他GC算法，但吞吐量较高
+- Parallel GC，虽然延迟要低，但吞吐量较差，甚至出现较多的Socket错误
+- 从平均耗时和吞吐量总体来看，在当前配置下，CMS GC综合表现更优一些
+- G1 GC可能由于堆大小限制，并没有发挥较好的优势
 
