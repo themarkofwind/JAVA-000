@@ -11,38 +11,16 @@ java -XX:+UseSerialGC -Xms128m -Xmx128m -Xloggc:gc.serial.128.log -XX:+PrintGCDe
 java -XX:+UseSerialGC -Xms512m -Xmx512m -Xloggc:gc.serial.512.log -XX:+PrintGCDetails -XX:+PrintGCDateStamps GCLogAnalysis
 ```
 
-__GC日志__
-
-![](./images/serial_gc_128.png)
-
-![](./images/serial_gc_512.png)
-
-GC花费600ms
-
-__GC总结__
-
-- GC频率、是否出现OOM跟堆内存分配大小有直接关联
-- 年老代GC时间明显要大于年轻代GC时间
+![](./images/serial_gc_easy.png)
 
 ### Parallel
-
-__执行指令__
 
 ```
 java -XX:+UseParallelGC -Xms128m -Xmx128m -Xloggc:gc.parallel.128.log -XX:+PrintGCDetails -XX:+PrintGCDateStamps GCLogAnalysis
 java -XX:+UseParallelGC -Xms512m -Xmx512m -Xloggc:gc.parallel.512.log -XX:+PrintGCDetails -XX:+PrintGCDateStamps GCLogAnalysis
 ```
 
-![](./images/parallel_gc_128.png)
-
-![](./images/parallel_gc_512.png)
-
-GC花费550ms
-
-__GC总结__
-
-- 128M堆大小，依旧会出现OOM
-- 512M堆大小，对比Serial GC，GC次数虽然较多，但总体GC时间略少，说明Parallel GC的运行速度更快
+![](./images/parallel_gc_easy.png)
 
 ### CMS
 
@@ -51,7 +29,7 @@ java -XX:+UseConcMarkSweepGC -Xms128m -Xmx128m -Xloggc:gc.cms.128.log -XX:+Print
 java -XX:+UseConcMarkSweepGC -Xms512m -Xmx512m -Xloggc:gc.cms.512.log -XX:+PrintGC -XX:+PrintGCDateStamps GCLogAnalysis
 ```
 
-![](./images/cms_gc_512.png)
+![](./images/cms_gc_easy.png)
 
 ### G1
 
@@ -60,7 +38,15 @@ java -XX:+UseG1GC -Xms128m -Xmx128m -Xloggc:gc.g1.128.log -XX:+PrintGC -XX:+Prin
 java -XX:+UseG1GC -Xms512m -Xmx512m -Xloggc:gc.g1.512.log -XX:+PrintGC -XX:+PrintGCDateStamps GCLogAnalysis
 ```
 
-![](./images/g1_gc_512.png)
+![](./images/g1_gc_easy.png)
+
+### 总结
+
+- 堆大小为128m时，所有GC算法，执行程序都会OOM，堆大小根本上影响到服务的性能
+- 堆大小为512m时，G1算法的，吞吐量最大，平均延迟最低
+- Serial GC在众多算法中，平均延迟是最高的，充分体现单线程GC耗时的局限性
+
+
 
 ## 压测演练
 
